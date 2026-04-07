@@ -67,6 +67,7 @@ const mockOctokit = {
       createInOrg: jest.fn(),
       createForAuthenticatedUser: jest.fn(),
       replaceAllTopics: jest.fn(),
+      get: jest.fn(),
     },
     teams: {
       getByName: jest.fn(),
@@ -1877,6 +1878,121 @@ describe('publish:github', () => {
       repo: 'repo',
       subscribed: true,
       ignored: false,
+    });
+  });
+
+  describe('ensureRepoExists', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      mockOctokit.rest.users.getByUsername.mockResolvedValue({
+        data: { type: 'Organization' },
+      });
+      mockOctokit.rest.repos.createInOrg.mockResolvedValue({
+        data: {
+          clone_url: 'https://github.com/owner/repo.git',
+          html_url: 'https://github.com/owner/repo',
+        },
+      });
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should poll GitHub API when ensureRepoExists is true', async () => {
+      const mockGet = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Not Found'))
+        .mockResolvedValueOnce({ data: { name: 'repo' } });
+
+      mockOctokit.rest.repos.get = mockGet;
+
+      const promise = action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          ensureRepoExists: true,
+        },
+      });
+
+      await jest.advanceTimersByTimeAsync(1000);
+      await promise;
+
+      expect(mockGet).toHaveBeenCalledTimes(2);
+      expect(mockGet).toHaveBeenCalledWith({
+        owner: 'owner',
+        repo: 'repo',
+      });
+    });
+
+    it('should not poll GitHub API when ensureRepoExists is false', async () => {
+      const mockGet = jest.fn();
+      mockOctokit.rest.repos.get = mockGet;
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          ensureRepoExists: false,
+        },
+      });
+
+      expect(mockGet).not.toHaveBeenCalled();
+    });
+
+    it('should not poll GitHub API when ensureRepoExists is not provided', async () => {
+      const mockGet = jest.fn();
+      mockOctokit.rest.repos.get = mockGet;
+
+      await action.handler(mockContext);
+
+      expect(mockGet).not.toHaveBeenCalled();
+    });
+
+    it('should throw error if repo is not accessible after max attempts', async () => {
+      const mockGet = jest.fn().mockRejectedValue(new Error('Not Found'));
+      mockOctokit.rest.repos.get = mockGet;
+
+      let error: Error | undefined;
+      const promise = action
+        .handler({
+          ...mockContext,
+          input: {
+            ...mockContext.input,
+            ensureRepoExists: true,
+          },
+        })
+        .catch(e => {
+          error = e;
+        });
+
+      // Advance timers to allow all retries
+      for (let i = 0; i < 10; i++) {
+        await jest.advanceTimersByTimeAsync(1000);
+      }
+
+      await promise;
+
+      expect(error).toBeDefined();
+      expect(error?.message).toContain(
+        'Repository owner/repo still not accessible after 10 attempts',
+      );
+      expect(mockGet).toHaveBeenCalledTimes(10);
+    });
+
+    it('should succeed immediately if repo exists on first check', async () => {
+      const mockGet = jest.fn().mockResolvedValue({ data: { name: 'repo' } });
+      mockOctokit.rest.repos.get = mockGet;
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          ensureRepoExists: true,
+        },
+      });
+
+      expect(mockGet).toHaveBeenCalledTimes(1);
     });
   });
 });
