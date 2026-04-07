@@ -67,4 +67,21 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initializes a GitHub repository and polls the GitHub API to ensure it exists before proceeding, handling eventual consistency issues',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            ensureRepoExists: true,
+          },
+        },
+      ],
+    }),
+  },
 ];

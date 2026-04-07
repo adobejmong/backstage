@@ -30,6 +30,43 @@ import {
 } from './gitHelpers';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
+/**
+ * Polls the GitHub API to verify the repository exists.
+ * This handles eventual consistency issues where GitHub may return 404
+ * immediately after repository creation.
+ */
+async function pollForRepoExistence(
+  client: Octokit,
+  owner: string,
+  repo: string,
+  logger: LoggerService,
+  maxAttempts: number = 10,
+  delayMs: number = 1000,
+): Promise<void> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await client.rest.repos.get({
+        owner,
+        repo,
+      });
+      logger.info(
+        `Repository ${owner}/${repo} confirmed to exist after ${attempt} attempt(s)`,
+      );
+      return;
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw new Error(
+          `Repository ${owner}/${repo} still not accessible after ${maxAttempts} attempts. This may indicate a failure creating the repository.`,
+        );
+      }
+      logger.debug(
+        `Attempt ${attempt}/${maxAttempts}: Repository ${owner}/${repo} not yet accessible, retrying in ${delayMs}ms...`,
+      );
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
 export async function createGithubRepoWithCollaboratorsAndTopics(
   client: Octokit,
   repo: string,
@@ -80,6 +117,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   logger: LoggerService,
   autoInit?: boolean | undefined,
   workflowAccess?: 'none' | 'organization' | 'user',
+  ensureRepoExists?: boolean,
 ) {
   const user = await client.rest.users.getByUsername({
     username: owner,
@@ -264,6 +302,13 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
       owner,
       repo,
     });
+  }
+
+  if (ensureRepoExists) {
+    logger.info(
+      `Polling GitHub API to ensure repository ${owner}/${repo} exists...`,
+    );
+    await pollForRepoExistence(client, owner, repo, logger);
   }
 
   return newRepo;

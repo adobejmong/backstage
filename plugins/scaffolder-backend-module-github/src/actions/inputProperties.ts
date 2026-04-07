@@ -429,6 +429,15 @@ const workflowAccess = (z: typeof zod) =>
     })
     .optional();
 
+const ensureRepoExists = (z: typeof zod) =>
+  z
+    .boolean({
+      description:
+        'Poll the GitHub API after creating the repository to ensure it exists before proceeding. This handles eventual consistency issues where the GitHub API may return 404 immediately after creation. The default value is `false`',
+    })
+    .default(false)
+    .optional();
+
 export {
   access,
   allowAutoMerge,
@@ -446,6 +455,7 @@ export {
   deleteBranchOnMerge,
   description,
   dismissStaleReviews,
+  ensureRepoExists,
   gitAuthorEmail,
   gitAuthorName,
   gitCommitMessage,
