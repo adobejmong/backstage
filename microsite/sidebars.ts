@@ -271,6 +271,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
             {
               type: 'category',

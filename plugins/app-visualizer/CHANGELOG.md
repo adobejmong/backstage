@@ -1,5 +1,16 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.2
+
+### Patch Changes
+
+- e220589: Updated `PluginHeaderActionBlueprint` usage to pass params as a plain object.
+- Updated dependencies
+  - @backstage/ui@0.14.0
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/core-components@0.18.9
+  - @backstage/core-plugin-api@1.12.5
+
 ## 0.2.2-next.1
 
 ### Patch Changes

@@ -39,17 +39,14 @@ describe('NavItemBlueprint', () => {
           "input": "items",
         },
         "configSchema": {
-          "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "title": {
-                "type": "string",
-              },
+          "_fields": {
+            "title": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
             },
-            "type": "object",
           },
+          "parse": [Function],
         },
         "disabled": false,
         "factory": [Function],

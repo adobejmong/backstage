@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { assertError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, toError } from '@backstage/errors';
 import { Octokit } from 'octokit';
 
 import {
@@ -162,14 +162,15 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   try {
     newRepo = (await repoCreationPromise).data;
   } catch (e) {
-    assertError(e);
-    if (e.message === 'Resource not accessible by integration') {
+    if (toError(e).message === 'Resource not accessible by integration') {
       logger.warn(
         `The GitHub app or token provided may not have the required permissions to create the ${user.data.type} repository ${owner}/${repo}.`,
       );
     }
     throw new Error(
-      `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${e.message}`,
+      `Failed to create the ${user.data.type} repository ${owner}/${repo}, ${
+        toError(e).message
+      }`,
     );
   }
 
@@ -212,10 +213,11 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
           });
         }
       } catch (e) {
-        assertError(e);
         const name = extractCollaboratorName(collaborator);
         logger.warn(
-          `Skipping ${collaborator.access} access for ${name}, ${e.message}`,
+          `Skipping ${collaborator.access} access for ${name}, ${
+            toError(e).message
+          }`,
         );
       }
     }
@@ -229,8 +231,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         names: topics.map(t => t.toLowerCase()),
       });
     } catch (e) {
-      assertError(e);
-      logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
+      logger.warn(`Skipping topics ${topics.join(' ')}, ${toError(e).message}`);
     }
   }
 
@@ -401,9 +402,10 @@ export async function initRepoPushAndProtect(
         requiredLinearHistory,
       });
     } catch (e) {
-      assertError(e);
       logger.warn(
-        `Skipping: default branch protection on '${repo}', ${e.message}`,
+        `Skipping: default branch protection on '${repo}', ${
+          toError(e).message
+        }`,
       );
     }
   }
@@ -414,8 +416,12 @@ export async function initRepoPushAndProtect(
 function extractCollaboratorName(
   collaborator: { user: string } | { team: string } | { username: string },
 ) {
-  if ('username' in collaborator) return collaborator.username;
-  if ('user' in collaborator) return collaborator.user;
+  if ('username' in collaborator) {
+    return collaborator.username;
+  }
+  if ('user' in collaborator) {
+    return collaborator.user;
+  }
   return collaborator.team;
 }
 

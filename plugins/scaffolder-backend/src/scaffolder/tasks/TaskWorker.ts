@@ -16,7 +16,7 @@
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import { assertError, InputError, stringifyError } from '@backstage/errors';
+import { InputError, stringifyError, toError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -228,12 +228,12 @@ export class TaskWorker {
       await task.complete('completed', { output });
       await auditorEvent?.success();
     } catch (error) {
-      assertError(error);
+      const err = toError(error);
       await auditorEvent?.fail({
-        error,
+        error: err,
       });
       await task.complete('failed', {
-        error: { name: error.name, message: error.message },
+        error: { name: err.name, message: err.message },
       });
     }
   }

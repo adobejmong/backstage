@@ -1,5 +1,32 @@
 # @backstage/frontend-plugin-api
 
+## 0.16.0
+
+### Minor Changes
+
+- fa55078: **BREAKING**: Removed the deprecated `createSchemaFromZod` helper. Use the new `configSchema` option instead. See the [1.50 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#150) for more information.
+- 49397c1: Simplified the type signature of `createRouteRef` by replacing the dual `TParams`/`TParamKeys` type parameters with a single `TParamKey` parameter. This is a breaking change for callers that explicitly provided type arguments, but most usage that relies on inference is unaffected.
+
+### Patch Changes
+
+- 4c09967: Fixed the duplicate extension error message in `createFrontendModule` to correctly say "Module" instead of "Plugin".
+- e4804ab: Added `open` method to `DialogApi` that renders dialogs without any built-in dialog chrome, giving the caller full control over the dialog presentation. This avoids focus trap conflicts that occur when mixing components from different design libraries. The existing `show` and `showModal` methods are now deprecated in favor of `open`.
+- ddc5247: Fixed `FlattenedMessages` type to avoid excessive type instantiation depth in TypeScript 6 when using `createTranslationRef` with the `translations` option.
+- a2a6c3b: Added a new `configSchema` option for `createExtension` and `createExtensionBlueprint` that accepts direct schema values from any [Standard Schema](https://github.com/standard-schema/standard-schema) compatible library with JSON Schema support, such as zod v4 or the `zod/v4` subpath from zod v3. The old `config.schema` option is now deprecated. Note that direct zod v3 schemas are not supported by the new `configSchema` option — use `import { z } from 'zod/v4'` from the zod v3 package, or upgrade to zod v4. See the [1.50 migration documentation](https://backstage.io/docs/frontend-system/architecture/migrations#150) for more information.
+- d66a3ec: Added `titleLink` prop to `PageLayoutProps` so the plugin header title can link back to the plugin root.
+- e220589: Removed the unnecessary need to use `defineParams` callback from `PluginHeaderActionBlueprint`. It still works, but is no longer required.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/filter-predicates@0.1.2
+
+## 0.16.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/filter-predicates@0.1.2-next.0
+
 ## 0.16.0-next.1
 
 ### Minor Changes

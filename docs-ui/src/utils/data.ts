@@ -46,6 +46,10 @@ export const components: Page[] = [
     slug: 'checkbox',
   },
   {
+    title: 'CheckboxGroup',
+    slug: 'checkbox-group',
+  },
+  {
     title: 'Container',
     slug: 'container',
   },

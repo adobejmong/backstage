@@ -182,18 +182,14 @@ describe('ApiBlueprint', () => {
           "input": "apis",
         },
         "configSchema": {
-          "parse": [Function],
-          "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "additionalProperties": false,
-            "properties": {
-              "test": {
-                "default": "test",
-                "type": "string",
-              },
+          "_fields": {
+            "test": {
+              "required": false,
+              "toJsonSchema": [Function],
+              "validate": [Function],
             },
-            "type": "object",
           },
+          "parse": [Function],
         },
         "disabled": false,
         "factory": [Function],

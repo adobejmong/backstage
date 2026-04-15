@@ -1,5 +1,13 @@
 # @backstage/plugin-gateway-backend
 
+## 1.1.4
+
+### Patch Changes
+
+- 79453c0: Updated dependency `wait-for-expect` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+
 ## 1.1.4-next.1
 
 ### Patch Changes

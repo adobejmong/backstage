@@ -1,5 +1,33 @@
 # @backstage/frontend-app-api
 
+## 0.16.2
+
+### Patch Changes
+
+- 400aa23: Wrapped extension permission authorization in a try/catch to surface errors as `ForwardedError` with a clear message.
+- 364d4fe: Added `apis` to `BootstrapSpecializedApp` and `FinalizedSpecializedApp` types.
+- Updated dependencies
+  - @backstage/errors@1.3.0
+  - @backstage/core-app-api@1.20.0
+  - @backstage/frontend-plugin-api@0.16.0
+  - @backstage/filter-predicates@0.1.2
+  - @backstage/frontend-defaults@0.5.1
+  - @backstage/config@1.3.7
+  - @backstage/core-plugin-api@1.12.5
+
+## 0.16.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/core-app-api@1.20.0-next.2
+  - @backstage/config@1.3.7-next.0
+  - @backstage/core-plugin-api@1.12.5-next.2
+  - @backstage/filter-predicates@0.1.2-next.0
+  - @backstage/frontend-defaults@0.5.1-next.2
+  - @backstage/frontend-plugin-api@0.16.0-next.2
+
 ## 0.16.2-next.1
 
 ### Patch Changes

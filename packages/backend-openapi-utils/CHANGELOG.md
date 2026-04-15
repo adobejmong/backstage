@@ -1,5 +1,22 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.8
+
+### Patch Changes
+
+- 59dd9b9: Fixes a memory leak during `wrapServer` where stopped servers weren't removed from the clean up list.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0
+  - @backstage/errors@1.3.0
+
+## 0.6.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.0-next.2
+
 ## 0.6.8-next.1
 
 ### Patch Changes

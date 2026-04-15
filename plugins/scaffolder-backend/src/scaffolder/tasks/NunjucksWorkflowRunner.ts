@@ -33,7 +33,11 @@ import {
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
-import { generateExampleOutput, isTruthy } from './helper';
+import {
+  filterConditionalItems,
+  generateExampleOutput,
+  isTruthy,
+} from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
 
 import type {
@@ -690,6 +694,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       const output = this.render(task.spec.output, context, renderTemplate);
+
+      // Filter output links and text items based on their `if` condition
+      if (Array.isArray(output?.links)) {
+        output.links = filterConditionalItems(output.links);
+      }
+      if (Array.isArray(output?.text)) {
+        output.text = filterConditionalItems(output.text);
+      }
+
       await taskTrack.markSuccessful();
       await task.cleanWorkspace?.();
 
